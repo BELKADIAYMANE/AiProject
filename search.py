@@ -150,28 +150,38 @@ def nullHeuristic(state, problem=None):
  
  
  
+
+
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
    
     pq = util.PriorityQueue()
     visited = set()
+    expanded_nodes = 0  # Track the number of expanded nodes
+    max_fringe_size = 0  # Track the maximum size of the priority queue
+    
     pq.push((problem.getStartState(), []), 0)
- 
+
     while not pq.isEmpty():
+        # Update max fringe size
+        max_fringe_size = max(max_fringe_size, pq.count)
+        
         state, actions = pq.pop()
- 
+        
         if problem.isGoalState(state):
-            return actions
- 
+            return actions, expanded_nodes, max_fringe_size  # Return the solution path, expanded nodes, and max fringe size
+
         if state not in visited:
             visited.add(state)
- 
+            expanded_nodes += 1  # Increment expanded nodes
+
             for successor, action, stepCost in problem.getSuccessors(state):
                 new_actions = actions + [action]
                 cost = problem.getCostOfActions(new_actions) + heuristic(successor, problem)
                 pq.push((successor, new_actions), cost)
- 
-    return []  # Failure
+
+    return [], expanded_nodes, max_fringe_size  # Return failure with metrics
+
  
  
 # Abbreviations for search algorithms
